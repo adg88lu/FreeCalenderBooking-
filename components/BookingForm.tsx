@@ -40,7 +40,12 @@ export default function BookingForm() {
   });
 
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
-  const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
+  const prevMonth = () => {
+    if (isBefore(subMonths(currentMonth, 1), startOfMonth(new Date()))) return;
+    setCurrentMonth(subMonths(currentMonth, 1));
+  };
+  
+  const isPrevDisabled = isBefore(subMonths(currentMonth, 1), startOfMonth(new Date()));
 
   const isDateAvailable = (date: Date) => {
     if (isBefore(date, startOfDay(new Date()))) return false;
@@ -197,9 +202,14 @@ export default function BookingForm() {
               <div className="flex items-center justify-between mb-8">
                 <button
                   onClick={prevMonth}
-                  className="p-3 hover:bg-slate-100 rounded-full transition-all duration-300 hover:scale-110"
+                  disabled={isPrevDisabled}
+                  className={`p-3 rounded-full transition-all duration-300 ${
+                    isPrevDisabled 
+                      ? 'text-slate-200 cursor-not-allowed' 
+                      : 'hover:bg-slate-100 hover:scale-110 text-slate-600'
+                  }`}
                 >
-                  <ChevronLeft className="w-6 h-6 text-slate-600" />
+                  <ChevronLeft className="w-6 h-6" />
                 </button>
                 <h2 className="text-2xl font-bold text-slate-800">
                   {format(currentMonth, "MMMM yyyy")}
